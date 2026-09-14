@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['20', '22', '24']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      # 本包零依赖、无构建步骤（纯 ESM JavaScript），因此没有 npm ci / build。
+      - name: Syntax check
+        run: for f in lib/*.js tests/*.mjs scripts/*.mjs; do node --check "$f"; done
+      - name: Unit & contract tests
+        run: node tests/run-all.mjs

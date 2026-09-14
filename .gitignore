@@ -1,0 +1,10 @@
+# 安装/打包产物
+node_modules/
+*.tgz
+*.tsbuildinfo
+.DS_Store
+
+# 本机运行痕迹（绝不入库）
+*.log
+.env
+.env.*

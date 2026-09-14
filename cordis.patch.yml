@@ -1,0 +1,10 @@
+# Bundle layer contributed by perse-proof.
+#
+# Applied when the package is listed in a profile's `package.json` under
+# `dsh.profile.bundles`. A profile may equivalently insert the same row from its
+# own cordis.patch.yml; do ONE of the two, never both — the loader id must be
+# unique (preflight rule R-07).
+- insert:
+    - id: perse-proof
+      name: perse-proof
+      description: 证据与判据闸门

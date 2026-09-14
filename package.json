@@ -1,0 +1,41 @@
+{
+  "name": "perse-proof",
+  "version": "0.1.0",
+  "private": true,
+  "description": "证据与判据闸门：让每一句「已完成 / 已验证」都有据可查，且判据不能被它自己偷偷改。",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js"
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "README.md",
+    "README.zh.md",
+    "SPEC.md",
+    "ADDENDUM-A.md",
+    "API-NOTES.md"
+  ],
+  "scripts": {
+    "test": "node tests/run-all.mjs",
+    "pack": "npm pack"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "cordis.patch.yml"
+    }
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/persevere-dsh/perse-proof.git"
+  },
+  "homepage": "https://github.com/persevere-dsh/perse-proof#readme",
+  "engines": {
+    "node": ">=20"
+  },
+  "bugs": {
+    "url": "https://github.com/persevere-dsh/perse-proof/issues"
+  }
+}
