@@ -166,14 +166,22 @@ perse-proof/
 ## 6. 交付与安装（必须两步都验证）
 
 1. `cd perse-proof && npm pack` → `perse-proof-0.1.0.tgz`
-2. `dsh plugin --profile web add <tgz>`（写 `~/.dsh/profiles/web`）
-3. 在 `~/.dsh/profiles/web/cordis.patch.yml` 追加一行（与既有第三方插件行同构）：
-   ```yaml
-   - id: perse-proof
-     name: perse-proof
-   ```
-4. **验证**：新开一个会话，工具表里应出现 `proof_fact_set / proof_criteria_freeze / proof_verify_run / proof_claim / proof_criteria_check / proof_claims / proof_allowlist_add`，且斜杠命令 `/proof` 可用；`/proof status` 输出"无告警"。
-5. **影子模式**（隔离 `DSH_HOME` + 端口 ≥3100，绝不碰主进程 3080）：`node scripts/verify-load.mjs` 启动并断言插件加载成功、7 个工具注册成功。
+2. `dsh plugin --profile web add <tgz>`：包的 `package.json` 已声明 `dsh.bundle.patch`，
+   安装后包名会被**自动**追加进 `dsh.profile.bundles`。
+   **不要再手工往 profile 的 `cordis.patch.yml` 插一行**——bundle 层与 profile patch 二选一，
+   两边都做会因 loader id 重复触发 preflight 规则 R-07（`- insert:` 块内的 id 必须唯一）。
+3. 更新已装副本时要先删目录：pnpm 对同版本 `file:` 依赖不会重新解包，
+   `rm -rf <profile>/node_modules/perse-proof` 之后再 `add`，否则装到的还是旧代码。
+4. **验证**：新开一个会话，工具表里应出现 9 个 `proof_*` 工具
+   （`proof_fact_set` / `proof_facts` / `proof_criteria_freeze` / `proof_criteria_amend` /
+   `proof_criteria_check` / `proof_verify_run` / `proof_allowlist_add` / `proof_claim` / `proof_claims`），
+   斜杠命令 `/proof` 可用；`/proof status` 输出「判据 0 个任务 / 台账 0 条 / 证据 0 条 / 告警 0 条」
+   +「告警：暂无告警。」
+5. **影子模式**（隔离 `DSH_HOME` + 端口 ≥3199，**绝不碰主进程 3080**）：
+   `node scripts/verify-load.mjs` 断言组合树含插件、未被 app-boot 审计拒绝、
+   9 个工具 + order=2900 契约段 + `/proof` 命令均已注册、退出后端口释放。
+6. 生效时机：插件装进 profile 后，**运行中的 Web 实例不会自动挂载**（新装包不属于热更新范围），
+   需要重启 DSH Web 才会加载。
 
 ## 7. README 必须写清的 Known Limitations（不许假装能解决）
 
