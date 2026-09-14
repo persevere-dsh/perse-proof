@@ -4,9 +4,11 @@
  *
  *   node scripts/pack-check.mjs
  *
- * 1) 跑 `npm pack --dry-run --json`（**不**产出 tgz），断言清单包含：
- *      lib/index.js / cordis.patch.yml / README.md / README.zh.md
- * 2) 顺带校验挂载前提（ADDENDUM-A §A6 / SPEC §0）：
+ * 1) 跑 `npm pack --dry-run --json`（**不**产出 tgz），断言清单：
+ *      必须包含 lib/index.js / cordis.patch.yml / README.md / README.zh.md
+ *      必须 **不含** docs/（SPEC.md / ADDENDUM-A.md / API-NOTES.md 是维护者文档，
+ *      留在 git 仓库里，不进 npm 发布面；LICENSE 由 npm 自动带上）
+ * 2) 顺带校验挂载前提（docs/ADDENDUM-A.md §A6 / docs/SPEC.md §0）：
  *      package.json 声明 `dsh.bundle.patch = cordis.patch.yml`（否则 `dsh plugin add` 不会自动挂载）
  *      package.json 无 runtime dependencies（纯 JS 零依赖）
  *      cordis.patch.yml 里出现 id/name = perse-proof
@@ -23,6 +25,9 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..');
 
 const REQUIRED_FILES = ['lib/index.js', 'cordis.patch.yml', 'README.md', 'README.zh.md'];
+
+/** 维护者文档：只留在 git 仓库，绝不进 npm 包。 */
+const FORBIDDEN_FILES = ['docs/', 'SPEC.md', 'ADDENDUM-A.md', 'API-NOTES.md'];
 
 const failures = [];
 const notes = [];
@@ -76,6 +81,24 @@ if (!fs.existsSync(path.join(ROOT, 'package.json'))) {
       const extras = packed.filter((p) => !REQUIRED_FILES.includes(p));
       if (extras.length > 0) note(`额外包含 ${extras.length} 个文件：${extras.slice(0, 8).join(', ')}${extras.length > 8 ? ' …' : ''}`);
       if (packed.some((p) => p.includes('node_modules'))) fail('tgz 清单里出现了 node_modules');
+
+      // 发布面收窄：维护者文档不进包（docs/ 及其根级旧路径都不允许出现）。
+      let forbiddenHits = 0;
+      for (const bad of FORBIDDEN_FILES) {
+        const hits = packed.filter((p) => (bad.endsWith('/') ? p.startsWith(bad) : p === bad || p.endsWith(`/${bad}`)));
+        if (hits.length > 0) {
+          forbiddenHits += hits.length;
+          fail(`tgz 清单不应包含维护者文档 ${bad}，实际命中：${hits.slice(0, 4).join(', ')}`);
+          console.log(`  BAD  ${bad}（${hits.length} 项）`);
+        }
+      }
+      if (forbiddenHits === 0) {
+        console.log(`  ok   包内不含 docs/ 与 SPEC.md / ADDENDUM-A.md / API-NOTES.md（维护者文档不入 npm 包）`);
+      }
+      // 本机绝对路径泄露检查（npm 会把本地路径写进某些字段）。
+      const leaked = packed.filter((p) => p.includes('/Users/') || p.startsWith('/'));
+      if (leaked.length > 0) fail(`tgz 清单里出现绝对路径：${leaked.slice(0, 4).join(', ')}`);
+      else console.log('  ok   包内文件路径均为仓库相对路径（无本机绝对路径）');
     } else {
       fail('npm pack --dry-run --json 没有返回任何产物');
     }
@@ -98,7 +121,7 @@ if (pkg) {
   if (deps.length === 0) {
     console.log('  ok   package.json: 无 runtime dependencies');
   } else {
-    fail(`package.json 有 runtime dependencies：${deps.join(', ')}（SPEC §0 要求零依赖）`);
+    fail(`package.json 有 runtime dependencies：${deps.join(', ')}（docs/SPEC.md §0 要求零依赖）`);
   }
 }
 

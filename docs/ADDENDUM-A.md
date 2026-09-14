@@ -1,7 +1,7 @@
 # perse-proof · 附录 A（绑定性修正 + 接口冻结）
 
-> **本文件优先于 `SPEC.md`**：凡冲突处，以本文件与 `API-NOTES.md` 为准。
-> `API-NOTES.md` 是实测出来的真实 API（来源：已安装 rc.2 包 + 内存探针）；`SPEC.md` 是设计意图。
+> **本文件优先于 `docs/SPEC.md`**：凡冲突处，以本文件与 `docs/API-NOTES.md` 为准。
+> `docs/API-NOTES.md` 是实测出来的真实 API（来源：已安装 rc.2 包 + 内存探针）；`docs/SPEC.md` 是设计意图。
 
 ## A1. 四条必须改掉的设计假设（否则会炸）
 
@@ -41,7 +41,7 @@
 
 ```js
 // lib/config.js
-export const DEFAULTS;                       // 见 SPEC §4
+export const DEFAULTS;                       // 见 docs/SPEC.md §4
 export function resolveConfig(raw);           // → {config, warnings:[]}
 
 // lib/store.js
@@ -115,7 +115,7 @@ export function apply(ctx, config);
 ```
 
 **约定**：
-- 所有 `createXxx` 的依赖通过参数注入（便于 `tests/mock-ctx.mjs` 单测），**模块内不得直接 import 其他模块的单例**。
+- 所有 `createXxx` 的依赖通过参数注入（便于 `test/mock-ctx.mjs` 单测），**模块内不得直接 import 其他模块的单例**。
 - 面向用户的文本（工具返回值、命令输出、注入提示）一律**中文白话**，不出现本插件内部字段名。
 - 任何外部调用包在 `try/catch` 里；插件不得因自身异常中断会话。
 

@@ -1,5 +1,5 @@
 /**
- * config（SPEC §4）单测 ＋ 插件装配（SPEC §5 的 T13 / T14）。
+ * config（docs/SPEC.md §4）单测 ＋ 插件装配（docs/SPEC.md §5 的 T13 / T14）。
  * T13 = 能力缺失时降级；T14 = 所有能力关闭时干净退出。
  */
 
@@ -31,7 +31,7 @@ function expectKeys(actual, expected, label) {
   }
 }
 
-test('config: 默认值即 SPEC §4（C 默认关闭）', () => {
+test('config: 默认值即 docs/SPEC.md §4（C 默认关闭）', () => {
   const { config, warnings } = resolveConfig();
   expectKeys(config.report, { enabled: true, order: 2900, maxGatesPerTurn: 1 }, 'report');
   expectKeys(config.jargon, { enabled: true, minCodenameCount: 2, extraPatterns: [] }, 'jargon');

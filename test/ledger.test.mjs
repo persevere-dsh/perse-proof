@@ -1,5 +1,5 @@
 /**
- * ledger（C3）单测 —— 覆盖 SPEC §5 的 T5 / T6，外加台账基本读写与 file 证据 sha 校验。
+ * ledger（C3）单测 —— 覆盖 docs/SPEC.md §5 的 T5 / T6，外加台账基本读写与 file 证据 sha 校验。
  * 全部离线：只写 os.tmpdir() 下的临时目录，绝不碰用户目录。
  */
 
@@ -55,7 +55,7 @@ test('T5 todo 丢项: 3 项 pending → 下次清单只剩 1 项 ⇒ 恰好 1 �
   assert.ok(alertText.includes('写 mock'), `告警应列出消失条目「写 mock」，实际：${alertText}`);
   assert.ok(alertText.includes('跑测试'), `告警应列出消失条目「跑测试」，实际：${alertText}`);
 
-  // 与 SPEC §2 一致：同时落一条 append-only 的 alert 记录
+  // 与 docs/SPEC.md §2 一致：同时落一条 append-only 的 alert 记录
   const records = await store.read(sessionId);
   const persisted = records.filter((r) => r.type === 'alert' && r.data?.kind === 'todo-drop');
   assert.equal(persisted.length, 1, `store 里应有 1 条 todo-drop 记录，实际 ${persisted.length}`);

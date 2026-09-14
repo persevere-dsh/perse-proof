@@ -1,5 +1,5 @@
 /**
- * gates（B+A 的执行面）单测 —— 覆盖 SPEC §5 的 T9 / T10 / T11。
+ * gates（B+A 的执行面）单测 —— 覆盖 docs/SPEC.md §5 的 T9 / T10 / T11。
  * 闸门都在 agent/turn-stopping（serial）里跑；这里只测纯判定函数 evaluate()。
  */
 
@@ -67,7 +67,7 @@ test('T9 完成声明闸门: 无完成性措辞时不干预', async () => {
   assert.equal(r?.steer, null, '没有完成性措辞不应干预');
 });
 
-test('T10 代号闸门: 未释义代号 ≥2 ⇒ 1 次注入（SPEC §5 矩阵原文的 D8/D9/ADJ-5）', async () => {
+test('T10 代号闸门: 未释义代号 ≥2 ⇒ 1 次注入（docs/SPEC.md §5 矩阵原文的 D8/D9/ADJ-5）', async () => {
   const { gates } = setup();
   const r = await gates.evaluate({
     sessionId: 'session-t10',
@@ -79,7 +79,7 @@ test('T10 代号闸门: 未释义代号 ≥2 ⇒ 1 次注入（SPEC §5 矩阵�
   assert.match(r.steer.message, /白话|代号|解释|名称/, `注入文本应要求改写成"白话名称（代号）"：${r.steer.message}`);
 });
 
-test('T10 代号闸门: SPEC §3.5 三个正则的覆盖（ADJ-5 / WP8 / S6a）', async () => {
+test('T10 代号闸门: docs/SPEC.md §3.5 三个正则的覆盖（ADJ-5 / WP8 / S6a）', async () => {
   const { gates } = setup();
   const r = await gates.evaluate({
     sessionId: 'session-t10-patterns',

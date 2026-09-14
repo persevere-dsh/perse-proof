@@ -12,13 +12,10 @@
     "lib",
     "cordis.patch.yml",
     "README.md",
-    "README.zh.md",
-    "SPEC.md",
-    "ADDENDUM-A.md",
-    "API-NOTES.md"
+    "README.zh.md"
   ],
   "scripts": {
-    "test": "node tests/run-all.mjs",
+    "test": "node test/run-all.mjs",
     "pack": "npm pack"
   },
   "dsh": {

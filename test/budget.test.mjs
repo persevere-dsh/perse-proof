@@ -1,5 +1,5 @@
 /**
- * budget（C）单测 —— 覆盖 SPEC §5 的 T12（默认关闭、不干扰）＋派发预算提取。
+ * budget（C）单测 —— 覆盖 docs/SPEC.md §5 的 T12（默认关闭、不干扰）＋派发预算提取。
  */
 
 import test, { after } from 'node:test';

@@ -8,7 +8,7 @@
 1. **host 平面、无客户端 UI、无 typed remote**：单包，纯 ESM JavaScript，**零运行时依赖**（只用 `node:` 内置模块）。
    不引入 typert、不做浏览器半。挂载方式 = 装进 profile 的 node_modules + 在 profile 的 `cordis.patch.yml` 加一行（与用户现有的 `dsh-zai-search-tools` 同一模式）。
 2. **`package.json` 不声明 `dsh.bundle`**（避免 host 树 / preset 树双挂导致 `apply` 跑两次、监听双份）。
-3. **所有 API 必须按 `API-NOTES.md`（由核实代理产出，来源 = 已安装 rc.2 包）写**；`API-NOTES.md` 标"未验证"的地方，实现里必须有运行时兜底（判空、try/catch、降级日志），**不允许崩掉整个插件加载**。
+3. **所有 API 必须按 `docs/API-NOTES.md`（由核实代理产出，来源 = 已安装 rc.2 包）写**；`docs/API-NOTES.md` 标"未验证"的地方，实现里必须有运行时兜底（判空、try/catch、降级日志），**不允许崩掉整个插件加载**。
 4. **不允许 inject 不存在的服务**（会导致插件 pending、`app-boot` 报错）。采用防御式接线：不 inject，`apply()` 里逐个判空，缺失的能力只降级并记一条日志。
 5. **一切持久状态只追加，不覆盖**：所有本插件事件都是 append-only；投影只做派生视图。
 6. **副作用上限**：单轮内每个闸门最多干预 1 次（`maxGatesPerTurn`）；所有闸门都可配置关闭；`budget` 默认 `enabled: false`。
@@ -17,7 +17,7 @@
 
 ```
 perse-proof/
-  package.json            # name=perse-proof, type=module, main=lib/index.js, files=[lib,...], 无 dependencies
+  package.json            # name=perse-proof, type=module, main=lib/index.js, files=[lib, cordis.patch.yml, README*], 无 dependencies
   lib/
     index.js              # 插件入口：name / apply(ctx, config)；防御式接线所有能力
     config.js             # 默认配置 + 合并与校验（手写，不引入 schemastery）
@@ -30,20 +30,24 @@ perse-proof/
     digest.js             # 规范化内容摘要（剔除易变量）+ 文件 sha256
     commands.js           # /proof 命令（status/facts/criteria/claims/alerts/help）
     util.js               # 事件追加、投影注册、时间、截断等薄封装 + 能力探测
-  tests/
+  test/
     mock-ctx.mjs          # 假 ctx（记录事件、可触发事件、可读取注入内容）
     ledger.test.mjs
     criteria.test.mjs     # 含"易变量不影响摘要"与"A-CORE 漂移场景"
     claims.test.mjs
     gates.test.mjs
     budget.test.mjs
+    config.test.mjs       # 配置默认值 + 插件装配
     run-all.mjs           # 顺序跑全部测试，非零退出即失败
   scripts/
     verify-load.mjs       # 影子模式：隔离 DSH_HOME 启动，确认插件加载 + 工具注册
     pack-check.mjs        # npm pack 后校验 tgz 内容清单
   README.md / README.zh.md
-  SPEC.md               # 本文件
-  API-NOTES.md          # 由 API 核实代理产出（实现依据）
+  LICENSE
+  docs/                 # 维护者文档：不进 npm 包，只留在 git 仓库
+    SPEC.md             # 本文件
+    ADDENDUM-A.md       # 绑定性修正 + 接口冻结（优先于 SPEC）
+    API-NOTES.md        # rc.2 API 实测笔记（由 API 核实代理产出，实现依据）
 ```
 
 ## 2. 数据模型（全部 append-only）
@@ -140,7 +144,7 @@ perse-proof/
 }
 ```
 
-## 5. 测试矩阵（`node tests/run-all.mjs` 必须全绿）
+## 5. 测试矩阵（`node test/run-all.mjs` 必须全绿）
 
 | 用例 | 断言 |
 |---|---|

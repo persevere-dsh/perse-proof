@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
- * perse-proof 测试总入口：**顺序**执行全部 tests/*.test.mjs，打印 T1–T14 逐条结论与汇总。
+ * perse-proof 测试总入口：**顺序**执行全部 test/*.test.mjs，打印 T1–T14 逐条结论与汇总。
  * 任一用例失败 / 任一测试文件缺失 ⇒ 进程以非零码退出。
  *
- *   node tests/run-all.mjs            # 全部
- *   node tests/run-all.mjs T1 T2      # 只跑编号匹配的用例（便于定位）
+ *   node test/run-all.mjs            # 全部
+ *   node test/run-all.mjs T1 T2      # 只跑编号匹配的用例（便于定位）
  *
  * 环境：只用 node 内置模块；测试自身写 os.tmpdir() 下的临时目录（PERSE_PROOF_HOME 强制隔离）。
  */
@@ -18,7 +18,7 @@ import { fileURLToPath } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..');
 
-/** SPEC §1 冻结的测试文件清单（顺序即执行顺序）。 */
+/** docs/SPEC.md §1 冻结的测试文件清单（顺序即执行顺序）。 */
 const FILES = [
   'ledger.test.mjs',
   'criteria.test.mjs',
@@ -106,7 +106,7 @@ for (const result of fileResults) {
 
 const passthrough = (line) => process.stdout.write(`${line}\n`);
 
-passthrough('perse-proof · tests/run-all.mjs');
+passthrough('perse-proof · test/run-all.mjs');
 passthrough(`node ${process.version} · cwd=${ROOT} · PERSE_PROOF_HOME=${home}`);
 passthrough('');
 
@@ -122,7 +122,7 @@ let totalFail = 0;
 for (const result of fileResults) {
   if (result.missing) {
     failedFiles += 1;
-    passthrough(`MISSING  ${result.file}  （SPEC §1 要求存在）`);
+    passthrough(`MISSING  ${result.file}  （docs/SPEC.md §1 要求存在）`);
     continue;
   }
   const pass = result.tests.filter((t) => t.ok).length;

@@ -1,8 +1,12 @@
 # perse-proof
 
+[![CI](https://github.com/persevere-dsh/perse-proof/actions/workflows/ci.yml/badge.svg)](https://github.com/persevere-dsh/perse-proof/actions/workflows/ci.yml)
+
 **Every "done / verified" in DSH should point at something real — and the acceptance criteria must not be quietly edited by the very agent being judged.**
 
 This is not a plugin that makes the model smarter. It **forces the mechanically checkable parts**: hashes, existence, exit codes, append-only semantics, role separation, structural invariants. It is a host-plane plugin (no client UI, no typed remote), plain ESM JavaScript, zero runtime dependencies.
+
+`perse` = persevere. This repository is part of the **Persevere with DSH** collection.
 
 ---
 
@@ -111,7 +115,7 @@ The script boots the web profile with an **isolated `DSH_HOME`** (under `/tmp`) 
 ## 5. Tests
 
 ```bash
-node tests/run-all.mjs      # runs T1–T14 in order with a per-case PASS/FAIL matrix and a summary; non-zero exit on any failure
+node test/run-all.mjs      # runs T1–T14 in order with a per-case PASS/FAIL matrix and a summary; non-zero exit on any failure
 node scripts/pack-check.mjs # npm pack --dry-run --json: checks the artifact list and the mounting preconditions
 ```
 
@@ -133,6 +137,26 @@ All tests use `node:test` + `node:assert/strict`, are **zero-dependency and offl
 - **The honest difference**: this repository **does not** follow the `perse-updater` / `perse-cua` TypeScript + `tsc -b` + `tsdown` convention. There is no `lib/types/*.d.ts`, no `src/`, no build script.
 - **Plan**: migrate to TS once the interfaces settle (when the criteria/evidence data model stops moving), adding type declarations and the packaging chain while keeping the same three exports (`name` / `apply`, no `Config` export) and the same on-disk file format.
 - **Profile dependency constraint**: DSH profiles run with `autoInstallPeers:false`, so this package has **zero dependencies and zero peers**.
+
+## 8. Documentation
+
+| Document | What it is |
+|---|---|
+| [`docs/SPEC.md`](docs/SPEC.md) | Implementation spec v1 — design intent, data model, test matrix |
+| [`docs/ADDENDUM-A.md`](docs/ADDENDUM-A.md) | Binding corrections + interface freeze; wins over `SPEC.md` wherever the two conflict |
+| [`docs/API-NOTES.md`](docs/API-NOTES.md) | **rc.2 API measured notes** — measured against the installed rc.2 packages (not the alpha sources); the implementation basis |
+
+These are maintainer documents: they stay in the git repository and are **not** part of the npm package (`files[]` ships only `lib/`, `cordis.patch.yml`, `README.md`, `README.zh.md`; `LICENSE` is added by npm automatically).
+
+## 9. Deviations from the collection standard
+
+This plugin is plain ESM JavaScript with zero dependencies, so the standard's TypeScript / codegen items **do not apply** here. Facts and reasons only, one line each (§7 keeps the longer rationale):
+
+1. **Plain JavaScript, no TS / `tsconfig.json`.** There is no `src/`, no type declarations and no compile step — `lib/` *is* the source.
+2. **No typed remote, therefore no codegen and no `scripts/gen-typert.mjs`.** Typert exists to expose `@Remote` methods to a client half; this plugin is host-only and has no client half.
+3. **`lib/` is source, not build output, so it is committed** — unlike the standard's "`lib/` is not committed". A committed build directory would be wrong; a committed source directory is required.
+4. **CI runs syntax checks plus tests, not typecheck / codegen / build / test.** With no compiler and no build step there is nothing for the first three to do.
+5. **Tests live in `test/` and run via `node test/run-all.mjs`** — a custom runner that prints a per-case PASS/FAIL matrix, not `node --test`.
 
 ---
 

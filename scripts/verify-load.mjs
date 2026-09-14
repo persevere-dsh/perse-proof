@@ -27,7 +27,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-import { createMockCtx, TOOL_NAMES } from '../tests/mock-ctx.mjs';
+import { createMockCtx, TOOL_NAMES } from '../test/mock-ctx.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..');

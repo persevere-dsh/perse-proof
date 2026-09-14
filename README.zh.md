@@ -1,8 +1,12 @@
 # perse-proof
 
+[![CI](https://github.com/persevere-dsh/perse-proof/actions/workflows/ci.yml/badge.svg)](https://github.com/persevere-dsh/perse-proof/actions/workflows/ci.yml)
+
 **让 DSH 的每一句「已完成 / 已验证」都有据可查，且判据不能被它自己偷偷改。**
 
 这不是"让模型更聪明"的插件，而是把**可机械验证的部分强制掉**：哈希、存在性、退出码、追加语义、角色分离、结构不变量。它是 host 平面插件（无客户端 UI、无 typed remote），纯 ESM JavaScript、零运行时依赖。
+
+`perse` = persevere。本仓库属于 **Persevere with DSH** 合集。
 
 ---
 
@@ -111,7 +115,7 @@ node scripts/verify-load.mjs           # 隔离 DSH_HOME + 端口 ≥3199：pack
 ## 五、测试
 
 ```bash
-node tests/run-all.mjs      # 顺序跑 T1–T14，逐条 PASS/FAIL + 汇总，任一失败即非零退出
+node test/run-all.mjs      # 顺序跑 T1–T14，逐条 PASS/FAIL + 汇总，任一失败即非零退出
 node scripts/pack-check.mjs # npm pack --dry-run --json，校验产物清单与挂载前提
 ```
 
@@ -133,6 +137,26 @@ node scripts/pack-check.mjs # npm pack --dry-run --json，校验产物清单与�
 - **诚实的差异**：本仓库**不符合** `perse-updater` / `perse-cua` 那套 TypeScript + `tsc -b` + `tsdown` 的规范。它没有 `lib/types/*.d.ts`、没有 `src/`、没有构建脚本。
 - **后续计划**：等接口稳定后（判据/证据的数据模型不再变）再迁移到 TS，并补上类型声明与打包链；迁移时保持 `lib/index.js` 的三个导出（`name` / `apply`，不导出 `Config`）与配置文件仓库格式不变。
 - **profile 依赖前提**：DSH profile 是 `autoInstallPeers:false`，所以本包**零依赖、零 peer**。
+
+## 八、文档（Documentation）
+
+| 文档 | 是什么 |
+|---|---|
+| [`docs/SPEC.md`](docs/SPEC.md) | 实现规格 v1——设计意图、数据模型、测试矩阵 |
+| [`docs/ADDENDUM-A.md`](docs/ADDENDUM-A.md) | 绑定性修正 + 接口冻结；与 `SPEC.md` 冲突处一律以它为准 |
+| [`docs/API-NOTES.md`](docs/API-NOTES.md) | **rc.2 API 实测笔记**——依据已安装的 rc.2 包实测（不是 alpha 源码），是实现的依据 |
+
+这三份是维护者文档：留在 git 仓库里，**不进 npm 包**（`files[]` 只发布 `lib/`、`cordis.patch.yml`、`README.md`、`README.zh.md`；`LICENSE` 由 npm 自动带上）。
+
+## 九、与本合集规范的差异（Deviations from the collection standard）
+
+本插件是纯 ESM JavaScript、零依赖，所以合集规范里的 TS / codegen 各项**不适用**。以下只陈述事实与理由，每条一句（更长的理由见第七节）：
+
+1. **纯 JavaScript，没有 TS / `tsconfig.json`。** 没有 `src/`、没有类型声明、没有编译步骤——`lib/` 就是源码。
+2. **没有 typed remote，因此没有 codegen，也没有 `scripts/gen-typert.mjs`。** typert 只用于把 `@Remote` 方法暴露给客户端半；本插件是 host-only，没有客户端半。
+3. **`lib/` 是源码、不是构建产物，所以提交入库**——与规范里"`lib/` 不入库"不同。构建产物入库才是错的，源码入库是必需的。
+4. **CI 跑的是语法检查 + 测试，而不是 typecheck / codegen / build / test。** 没有编译器、没有构建步骤，前三项无事可做。
+5. **测试目录为 `test/`，用 `node test/run-all.mjs` 运行**——自定义 runner，逐条打印 PASS/FAIL 矩阵，不是 `node --test`。
 
 ---
 

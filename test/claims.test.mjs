@@ -1,8 +1,8 @@
 /**
- * claims（C2）单测 —— 覆盖 SPEC §5 的 T7 / T8。
+ * claims（C2）单测 —— 覆盖 docs/SPEC.md §5 的 T7 / T8。
  *
- * 说明：ADDENDUM-A §A4 冻结了 `record({..., sessionToolCalls})` 这个**参数名**，
- * 但没有冻结 `sessionToolCalls` 里每个元素的字段形状（SPEC §3.3 只说"在会话的 tool/call
+ * 说明：docs/ADDENDUM-A.md §A4 冻结了 `record({..., sessionToolCalls})` 这个**参数名**，
+ * 但没有冻结 `sessionToolCalls` 里每个元素的字段形状（docs/SPEC.md §3.3 只说"在会话的 tool/call
  * （name=bash/pwsh）里找 command 包含该 cmd 的记录，并要求其对应 tool/result 的退出码/输出哈希一致"）。
  * 因此下面的样例记录同时提供 `name` / `command` / `args.command` / `exitCode` / `outputSha256`
  * 以及 `result`、`toolResult` 两种嵌套形态，覆盖合理的读取方式。
@@ -66,7 +66,7 @@ function bareCall(command) {
 }
 
 /**
- * SPEC §3.3 的要求是「**拒绝记为 verified**」——两种合法实现都接受：
+ * docs/SPEC.md §3.3 的要求是「**拒绝记为 verified**」——两种合法实现都接受：
  *   (a) 直接拒绝（抛错，或返回 `{ok:false, errors:[...]}`）；
  *   (b) 降级成 partial / unverified。
  * 唯一不允许的是"被当作 verified 收下"。
@@ -131,7 +131,7 @@ test('T7 claim 文件证据: sha 相符 ⇒ 记为 verified；纯 manual 证据�
       evidence: [{ kind: 'manual', note: '我确认过了' }],
     }),
   );
-  assert.ok(failed(manualOnly), 'manual 证据不得支撑 verified（SPEC §2）');
+  assert.ok(failed(manualOnly), 'manual 证据不得支撑 verified（docs/SPEC.md §2）');
 });
 
 test('T8 claim 命令证据: 会话里没有对应 bash 记录 ⇒ 拒绝 verified', async () => {

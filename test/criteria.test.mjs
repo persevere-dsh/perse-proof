@@ -1,5 +1,5 @@
 /**
- * criteria（C1）单测 —— 覆盖 SPEC §5 的 T1 / T2 / T3 / T4。
+ * criteria（C1）单测 —— 覆盖 docs/SPEC.md §5 的 T1 / T2 / T3 / T4。
  * T1 直接测 lib/digest.js（内容摘要剔除易变量）；T2 是 A-CORE 漂移场景的机械判定。
  */
 
@@ -66,7 +66,7 @@ test('T1 摘要稳定性: 归一化正反证据 + 按 id 排序 + 易变量被�
     'normalize:false 时易变量应影响摘要',
   );
 
-  // 顺序无关（SPEC §3.2：按 id 排序后拼接）
+  // 顺序无关（docs/SPEC.md §3.2：按 id 排序后拼接）
   const shuffled = [BASE_CRITERIA[2], BASE_CRITERIA[0], BASE_CRITERIA[3], BASE_CRITERIA[1]];
   assert.equal(contentDigest(BASE_CRITERIA), contentDigest(shuffled), '判据顺序不应影响摘要');
 
@@ -89,7 +89,7 @@ test('T2 A-CORE 漂移: freeze → run(fail=1) → 改判据内容 → run(pass=
     sessionId,
     taskId,
     criteria: BASE_CRITERIA,
-    executor: { path: 'tests/verify.mjs' },
+    executor: { path: 'test/verify.mjs' },
     artifacts: ['out/report.md'],
   });
   assert.equal(typeof frozen?.revision, 'number', `freeze 应返回 revision，实际 ${JSON.stringify(frozen)}`);
@@ -98,8 +98,8 @@ test('T2 A-CORE 漂移: freeze → run(fail=1) → 改判据内容 → run(pass=
   const failedRun = await criteria.recordRun({
     sessionId,
     taskId,
-    command: 'node tests/verify.mjs',
-    executorPath: 'tests/verify.mjs',
+    command: 'node test/verify.mjs',
+    executorPath: 'test/verify.mjs',
     exitCode: 1,
     pass: 3,
     fail: 1,
@@ -121,8 +121,8 @@ test('T2 A-CORE 漂移: freeze → run(fail=1) → 改判据内容 → run(pass=
   const passedRun = await criteria.recordRun({
     sessionId,
     taskId,
-    command: 'node tests/verify.mjs',
-    executorPath: 'tests/verify.mjs',
+    command: 'node test/verify.mjs',
+    executorPath: 'test/verify.mjs',
     exitCode: 0,
     pass: 10,
     fail: 0,
@@ -178,8 +178,8 @@ test('T3 执行器同文件: executor.path ∈ 判据引用文件 ⇒ criteria-d
   const sameFile = await criteria.freeze({
     sessionId,
     taskId: 'same-file',
-    criteria: [{ id: 'c1', desc: '回归测试全绿', check: 'node tests/check.mjs --verify' }],
-    executor: { path: 'tests/check.mjs' },
+    criteria: [{ id: 'c1', desc: '回归测试全绿', check: 'node test/check.mjs --verify' }],
+    executor: { path: 'test/check.mjs' },
   });
   const alerts = sameFile?.alerts ?? [];
   assert.equal(alerts.length, 1, `同文件应恰好 1 条告警，实际 ${JSON.stringify(alerts)}`);
@@ -189,8 +189,8 @@ test('T3 执行器同文件: executor.path ∈ 判据引用文件 ⇒ criteria-d
   const clean = await criteria.freeze({
     sessionId,
     taskId: 'clean',
-    criteria: [{ id: 'c1', desc: '回归测试全绿', check: 'node tests/check.mjs --verify' }],
-    executor: { path: 'tests/other-runner.mjs' },
+    criteria: [{ id: 'c1', desc: '回归测试全绿', check: 'node test/check.mjs --verify' }],
+    executor: { path: 'test/other-runner.mjs' },
   });
   assert.equal((clean?.alerts ?? []).length, 0, '执行器与判据不同文件时不得告警');
 });

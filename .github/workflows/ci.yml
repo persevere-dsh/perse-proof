@@ -17,8 +17,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-      # 本包零依赖、无构建步骤（纯 ESM JavaScript），因此没有 npm ci / build。
+      # 本包零依赖、无构建步骤（纯 ESM JavaScript），因此没有 npm ci / build；
+      # 与合集规范的差异清单见 README「Deviations from the collection standard」。
       - name: Syntax check
-        run: for f in lib/*.js tests/*.mjs scripts/*.mjs; do node --check "$f"; done
+        run: for f in lib/*.js test/*.mjs scripts/*.mjs; do node --check "$f"; done
       - name: Unit & contract tests
-        run: node tests/run-all.mjs
+        run: node test/run-all.mjs

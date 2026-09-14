@@ -1,7 +1,7 @@
 /**
  * perse-proof 测试用的 **假 ctx**（test double）。
  *
- * ⚠️ 这是假 ctx，**不是**真实 cordis Context。真实形状以 `API-NOTES.md` 为准：
+ * ⚠️ 这是假 ctx，**不是**真实 cordis Context。真实形状以 `docs/API-NOTES.md` 为准：
  *   - §3.0/§3.1  `ctx.tools.register(def) -> disposer`
  *                def 必须有 `execute(args, exec)`（**没有 `handler`**）；
  *                `parameters` 是**原始 JSON Schema**（`{type:'object',properties,required}`）；
